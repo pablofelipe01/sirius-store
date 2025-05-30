@@ -53,7 +53,7 @@ const products: Product[] = [
 export default function StorePage() {
   const account = useActiveAccount();
   const router = useRouter();
-  const { points, isLoading: isLoadingPoints, refetch } = useSiriusPoints(account?.address);
+  const { points, isLoading: isLoadingPoints, refetch, updatePointsTemporarily } = useSiriusPoints(account?.address);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -109,9 +109,19 @@ export default function StorePage() {
 
       if (response.ok) {
         setMessage({ type: 'success', text: '¡Compra realizada exitosamente!' });
-        await refetch(); // Actualizar el balance
+        
+        // Actualizar el balance inmediatamente con el valor de la API
+        if (data.newBalance !== undefined) {
+          updatePointsTemporarily(data.newBalance);
+        }
+        
         await fetchUserPurchases(); // Actualizar las compras
         setSelectedProduct(null);
+        
+        // Refrescar desde Airtable después de 3 segundos para sincronizar
+        setTimeout(() => {
+          refetch();
+        }, 3000);
       } else {
         setMessage({ type: 'error', text: data.error || 'Error al procesar la compra' });
       }

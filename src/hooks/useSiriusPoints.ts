@@ -18,6 +18,7 @@ interface UseSiriusPointsReturn {
   userExists: boolean;
   refetch: () => Promise<void>;
   createUser: (name?: string) => Promise<boolean>;
+  updatePointsTemporarily: (newPoints: number) => void;
 }
 
 export function useSiriusPoints(walletAddress: string | undefined): UseSiriusPointsReturn {
@@ -101,6 +102,10 @@ export function useSiriusPoints(walletAddress: string | undefined): UseSiriusPoi
     }
   };
 
+  const updatePointsTemporarily = (newPoints: number) => {
+    setPoints(newPoints);
+  };
+
   useEffect(() => {
     fetchUserPoints();
   }, [walletAddress]);
@@ -112,6 +117,7 @@ export function useSiriusPoints(walletAddress: string | undefined): UseSiriusPoi
     error,
     userExists,
     refetch: fetchUserPoints,
-    createUser
+    createUser,
+    updatePointsTemporarily
   };
 }

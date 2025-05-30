@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
     }
 
     const userRecord = userRecords[0];
-    const currentPoints = userRecord.get('sirius_points') || 0;
+    const currentPoints = Number(userRecord.get('sirius_points')) || 0;
 
     if (currentPoints < price) {
       return NextResponse.json(
